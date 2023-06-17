@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         editCityName.requestFocus();
                         editCityName.setError("Please Enter City Name");
                     }else{
-                        textCityName.setText(city.toUpperCase());
                         updateWeather(city);
                     }
                 }else {
@@ -171,11 +170,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    textLastTime.setText(getCurrentTime());
-                    lon = response.getJSONObject("coord").getDouble("lon");
-                    lat = response.getJSONObject("coord").getDouble("lat");
-                    getCurrentWeather(lat, lon);
-                    getForecastWeather(lat, lon);
+                    if(response.getString("cod").equals("404")){
+                        Toast.makeText(MainActivity.this, "Please enter correct city name", Toast.LENGTH_LONG).show();
+                    }else {
+                        textLastTime.setText(getCurrentTime());
+                        lon = response.getJSONObject("coord").getDouble("lon");
+                        lat = response.getJSONObject("coord").getDouble("lat");
+                        getCurrentWeather(lat, lon);
+                        getForecastWeather(lat, lon);
+                    }
                 } catch (Exception ex) {
                     Toast.makeText(MainActivity.this, "Please enter correct city name", Toast.LENGTH_LONG).show();
                 }
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error",error.getMessage());
+                Log.d("Fetch Error","city not found");
             }
         });
         requestQueue.add(jsonObjectRequest);
