@@ -16,4 +16,7 @@ Uses permission from device: Internet, Access network state, Coarse Location, Fi
 
 # Screenshots
 The screenshots are from the Android Virtual Device: Pixel 6 API 33</br>
-![WeatherApp SS 1](https://github.com/Harsh5488/WeatherApp/assets/95761669/6dc1141c-7160-4e5d-af83-af374f83eb5d)
+Day</br>
+![WeatherApp SS Day](https://github.com/Harsh5488/WeatherApp/assets/95761669/33bc9dac-0199-48e3-b529-fd710c1f0e6d)</br>
+Night</br>
+![WeatherApp SS Night](https://github.com/Harsh5488/WeatherApp/assets/95761669/a0709bdf-27f9-4e1a-a298-8b86b1584b7f)
