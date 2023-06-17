@@ -41,7 +41,7 @@ public class FavCityAdapter extends RecyclerView.Adapter<FavCityAdapter.ViewHold
         holder.textTemperature.setText(obj.getTemperature());
         Picasso.get().load("https://openweathermap.org/img/w/"+obj.getImgCondition()+".png").into(holder.imgCondition);
         holder.textCondition.setText(obj.getCondition());
-        holder.textWindSpeed.setText(obj.getWindSpeed());
+        holder.textWindSpeed.setText(obj.getWindSpeed()+"Km/h");
     }
 
     @Override

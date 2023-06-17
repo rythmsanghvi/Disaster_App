@@ -22,6 +22,7 @@
 
         <ImageView
             android:id="@+id/imgBG"
+            android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -116,11 +117,11 @@
             android:layout_height="100dp"
             android:layout_below="@id/textTemp"
             android:layout_centerHorizontal="true"
-            android:layout_margin="4dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_margin="1dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
             android:src="@drawable/baseline_cloud_24" />
 
         <TextView
@@ -135,6 +136,7 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Conditions"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:textColor="@color/white" />
 
