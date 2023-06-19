@@ -148,8 +148,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     Toast.makeText(MainActivity.this,"Refreshing...",Toast.LENGTH_SHORT).show();
                     getCurrentWeather(lat,lon);
                     getForecastWeather(lat,lon);
-                    for (int i=2;i<saveKey.length;i++){
-                        getFavWeather(lat,lon,i);
+                    favArr.clear();
+                    for(int i=2;i<saveKey.length;i++){
+                        getFavCoord(saveKey[i],i);
                     }
                 }else {
                     Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_SHORT).show();
@@ -284,9 +285,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             public void onResponse(JSONObject response) {
                 textLastTime.setText(getCurrentTime());
                 saveLastResponse(response,1);
-                if (!arr.isEmpty()) {
-                    arr.clear();
-                }
+                arr.clear();
                 updateForecastWeather(response);
             }
         }, new Response.ErrorListener() {
