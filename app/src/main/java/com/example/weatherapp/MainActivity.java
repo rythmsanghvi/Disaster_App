@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import android.view.MenuItem;
+
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
@@ -39,15 +43,13 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     private ProgressBar progressBar;
-    private RelativeLayout rLHome;
+    private LinearLayout rLHome;
     private TextView textCityName, textTemp, textConditions, textWindSpeed, textLastTime;
-    private RecyclerView rvWeather, rvFavs;
+    private RecyclerView rvWeather;
     private ImageView imgBG, imgSearch, imgWeather, imgRefresh;
     private TextInputEditText editCityName;
     private ArrayList<WeatherModel> arr;
-    private ArrayList<FavCityModel> favArr;
     private WeatherModelAdapter weatherModelAdapter;
-    private FavCityAdapter favCityAdapter;
     private int PERMISSION_CODE = 1;
     private String cityName;
     //    double lat, lon;
@@ -79,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         textTemp = findViewById(R.id.textTemp);
         textConditions = findViewById(R.id.textConditions);
         rvWeather = findViewById(R.id.rvWeather);
-        rvFavs = findViewById(R.id.rvFavs);
-        imgBG = findViewById(R.id.imgBG);
+//        imgBG = findViewById(R.id.imgBG);
         imgWeather = findViewById(R.id.imgWeather);
         imgSearch = findViewById(R.id.imgSearch);
         imgRefresh = findViewById(R.id.imgRefresh);
@@ -91,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //        imgBG.setImageResource(R.drawable.night);
 
         arr = new ArrayList<>();
-        favArr = new ArrayList<>();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
-            Toast.makeText(this,"Fetching Last known location",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fetching Last known location", Toast.LENGTH_SHORT).show();
             lat = location.getLatitude();
             lon = location.getLongitude();
         }
@@ -114,28 +114,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         weatherModelAdapter = new WeatherModelAdapter(this, arr);
         rvWeather.setAdapter(weatherModelAdapter);
 
-        favCityAdapter = new FavCityAdapter(this,favArr);
-        rvFavs.setAdapter(favCityAdapter);
-
-        for(int i=2;i<saveKey.length;i++){
-            getFavCoord(saveKey[i],i);
-        }
 
         imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean isInternetAvailable = NetworkCheck.isNetworkAvailable(getApplicationContext());
-                if(isInternetAvailable){
+                if (isInternetAvailable) {
                     String city = editCityName.getText().toString();
                     if (city.equals("")) {
                         Toast.makeText(MainActivity.this, "Please enter city Name", Toast.LENGTH_SHORT).show();
                         editCityName.requestFocus();
                         editCityName.setError("Please Enter City Name");
-                    }else{
+                    } else {
                         updateWeather(city);
                     }
-                }else {
-                    Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -144,36 +138,47 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onClick(View v) {
                 boolean isInternetAvailable = NetworkCheck.isNetworkAvailable(getApplicationContext());
-                if(isInternetAvailable){
-                    Toast.makeText(MainActivity.this,"Refreshing...",Toast.LENGTH_SHORT).show();
-                    getCurrentWeather(lat,lon);
-                    getForecastWeather(lat,lon);
-                    favArr.clear();
-                    for(int i=2;i<saveKey.length;i++){
-                        getFavCoord(saveKey[i],i);
+                if (isInternetAvailable) {
+                    Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
+                    getCurrentWeather(lat, lon);
+                    getForecastWeather(lat, lon);
+                    for (int i = 2; i < saveKey.length; i++) {
                     }
-                }else {
-                    Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            if (menuItem.getItemId() == R.id.menu_home) {
+                // Target the home menu item
+                // Perform actions specific to the home menu item
+                return true;
+            } else if (menuItem.getItemId() == R.id.menu_categories) {
+                // Target the categories menu item
+                // Perform actions specific to the categories menu item
+                return true;
+            }
+            return false;
         });
     }
 
     private void updateWeather(String city) {
         String url = "https://api.openweathermap.org/data/2.5/weather?q="
-                +city
-                +"&appid="
-                +apiKey
-                +"&units=metric";
+                + city
+                + "&appid="
+                + apiKey
+                + "&units=metric";
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if(response.getString("cod").equals("404")){
+                    if (response.getString("cod").equals("404")) {
                         Toast.makeText(MainActivity.this, "Please enter correct city name", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         textLastTime.setText(getCurrentTime());
                         lon = response.getJSONObject("coord").getDouble("lon");
                         lat = response.getJSONObject("coord").getDouble("lat");
@@ -187,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error","city not found");
+                Log.d("Fetch Error", "city not found");
             }
         });
         requestQueue.add(jsonObjectRequest);
@@ -229,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onResponse(JSONObject response) {
                 textLastTime.setText(getCurrentTime());
-                saveLastResponse(response,0);
+                saveLastResponse(response, 0);
                 progressBar.setVisibility(View.GONE);
                 rLHome.setVisibility(View.VISIBLE);
                 updateCurrentWeather(response);
@@ -237,14 +242,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error",error.getMessage());
+                Log.d("Fetch Error", error.getMessage());
             }
         });
         requestQueue.add(jsonObjectRequest);
     }
 
     private void updateCurrentWeather(JSONObject response) {
-        try{
+        try {
             String city = response.getString("name");
             textCityName.setText(city);
 
@@ -263,9 +268,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             double wSpeed = response.getJSONObject("wind")
                     .getDouble("speed");
-            textWindSpeed.setText(""+wSpeed+"Km/h");
-        }catch (Exception e){
-            Log.d("Update Res",e.getMessage());
+            textWindSpeed.setText("" + wSpeed + "Km/h");
+        } catch (Exception e) {
+            Log.d("Update Res", e.getMessage());
         }
 
     }
@@ -284,14 +289,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onResponse(JSONObject response) {
                 textLastTime.setText(getCurrentTime());
-                saveLastResponse(response,1);
+                saveLastResponse(response, 1);
                 arr.clear();
                 updateForecastWeather(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error",error.getMessage());
+                Log.d("Fetch Error", error.getMessage());
             }
         });
 
@@ -299,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void updateForecastWeather(JSONObject response) {
-        try{
+        try {
             int loop = response.getInt("cnt");
             JSONArray forecast = response.getJSONArray("list");
 
@@ -319,18 +324,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 String pod = forecast.getJSONObject(i)
                         .getJSONObject("sys")
                         .getString("pod");
-                arr.add(new WeatherModel(temp, condition, wSpeed,time,pod));
-                if(i==0){
-                    if(pod.equals("n")){
-                        imgBG.setImageResource(R.drawable.night);
-                    }else {
-                        imgBG.setImageResource(R.drawable.day);
-                    }
-                }
+                arr.add(new WeatherModel(temp, condition, wSpeed, time, pod));
+//                if (i == 0) {
+//                    if (pod.equals("n")) {
+//                        imgBG.setImageResource(R.drawable.night);
+//                    } else {
+//                        imgBG.setImageResource(R.drawable.day);
+//                    }
+//                }
             }
             weatherModelAdapter.notifyDataSetChanged();
-        }catch (Exception e){
-            Log.d("Update Res",e.getMessage());
+        } catch (Exception e) {
+            Log.d("Update Res", e.getMessage());
         }
     }
 
@@ -352,20 +357,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         SharedPreferences sharedPreferences = getSharedPreferences("WeatherData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        try{
+        try {
             String save = res.toString();
             editor.putString(saveKey[time], save);
             editor.putString("Time", getCurrentTime());
             editor.apply();
-        }catch (Exception e){
-            Log.d("Save Res",e.getMessage());
+        } catch (Exception e) {
+            Log.d("Save Res", e.getMessage());
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        for (int i=0;i<saveKey.length;i++) {
+        for (int i = 0; i < saveKey.length; i++) {
             retrieveLastResponse(i);
         }
     }
@@ -377,102 +382,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         textLastTime.setText(dateTime);
         try {
             JSONObject response = new JSONObject(weatherData);
-            switch (time){
+            switch (time) {
                 case 0:
                     updateCurrentWeather(response);
                     break;
                 case 1:
                     updateForecastWeather(response);
                     break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                    updateFavWeather(response);
-                    break;
                 default:
-                    Log.d("retrieveLastResponse","Wrong time");
+                    Log.d("retrieveLastResponse", "Wrong time");
                     break;
             }
-        }catch (Exception ex){
-            Log.d("Load Res",ex.getMessage());
+        } catch (Exception ex) {
+            Log.d("Load Res", ex.getMessage());
         }
     }
 
-    public void getFavCoord(String name,int i){
-        String url = "https://api.openweathermap.org/data/2.5/weather?q="
-                +name
-                +"&appid="
-                +apiKey
-                +"&units=metric";
-        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    textLastTime.setText(getCurrentTime());
-                    double lon = response.getJSONObject("coord").getDouble("lon");
-                    double lat = response.getJSONObject("coord").getDouble("lat");
-                    getFavWeather(lat, lon, i);
-                } catch (Exception ex) {
-                    Log.d("getFavCoord","Favorite City Fetch Failed");
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error",error.getMessage());
-            }
-        });
-        requestQueue.add(jsonObjectRequest);
-    }
 
-    private void getFavWeather(double lat, double lon, int i) {
-        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
 
-        String urlCurrent = "https://api.openweathermap.org/data/2.5/weather?lat="
-                + lat
-                + "&lon="
-                + lon
-                + "&appid="
-                + apiKey
-                + "&units=metric";
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlCurrent, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                saveLastResponse(response,i);
-                updateFavWeather(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Fetch Error",error.getMessage());
-            }
-        });
-
-        requestQueue.add(jsonObjectRequest);
-    }
-
-    private void updateFavWeather(JSONObject response) {
-        try{
-            String city = response.getString("name");
-            String temperature = response.getJSONObject("main").getString("temp");
-            String img = response.getJSONArray("weather")
-                    .getJSONObject(0)
-                    .getString("icon");
-            String condition = response.getJSONArray("weather")
-                    .getJSONObject(0)
-                    .getString("main");
-            double wSpeed = response.getJSONObject("wind")
-                    .getDouble("speed");
-            favArr.add(new FavCityModel(0,city,temperature,condition,String.valueOf(wSpeed),img));
-        }catch (Exception e){
-            Log.d("Update Res",e.getMessage());
-        }
-        favCityAdapter.notifyDataSetChanged();
-    }
 }
+

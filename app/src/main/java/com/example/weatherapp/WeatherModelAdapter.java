@@ -35,7 +35,7 @@ public class WeatherModelAdapter extends RecyclerView.Adapter<WeatherModelAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         WeatherModel obj = arr.get(position);
-
+        System.out.println("check " + position);
         if(obj.getPod().equals("d")){
             holder.imgCardBG.setImageResource(R.drawable.day);
         }else {
