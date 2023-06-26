@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.view.MenuItem;
 
 
@@ -72,7 +74,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Initialize and assign variable
+        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
 
+        // Set Home selected
+        bottomNavigationView.setSelectedItemId(R.id.menu_home);
+
+        // Perform item selected listener
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.menu_home) {
+                    return true;
+                } else if (itemId == R.id.menu_categories) {
+                    startActivity(new Intent(getApplicationContext(), Categories.class));
+                    overridePendingTransition(0, 0);
+                    return true;
+                }
+
+                return false;
+            }
+
+        });
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         progressBar = findViewById(R.id.pBarLoading);
