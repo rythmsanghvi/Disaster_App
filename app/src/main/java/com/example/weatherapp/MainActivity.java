@@ -149,19 +149,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             }
         });
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.menu_home) {
-                // Target the home menu item
-                // Perform actions specific to the home menu item
-                return true;
-            } else if (menuItem.getItemId() == R.id.menu_categories) {
-                // Target the categories menu item
-                // Perform actions specific to the categories menu item
-                return true;
-            }
-            return false;
-        });
+
     }
 
     private void updateWeather(String city) {

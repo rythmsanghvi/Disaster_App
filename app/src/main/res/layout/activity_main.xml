@@ -239,13 +239,9 @@
 
         </LinearLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_navigation_view"
-            app:menu="@menu/bottom_navigation_menu"/>
 
     </LinearLayout>
+    <include layout="@layout/bottom_navigation" />
 
 </RelativeLayout>
 
