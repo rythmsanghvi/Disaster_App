@@ -1,5 +1,5 @@
 <cards>
-    @tools:sample/backgrounds/scenic[9], Card 1
-    @tools:sample/backgrounds/scenic[9], Card 2
-    @tools:sample/backgrounds/scenic[9], Card 3
+    cyclone, Card 1
+   cyclone, Card 2
+    cyclone, Card 3
 </cards>
